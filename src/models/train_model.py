@@ -1,7 +1,7 @@
 print(__package__)
 
 import theano
-theano.config.mode = "FAST_COMPILE"
+#theano.config.mode = "FAST_COMPILE"
 
 from .build_model import build_model
 from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--NLayers', default=3, type=int)
     parser.add_argument('--Ndim', default=3, type=int)
+    parser.add_argument('--dir', type=str)
 
     parser.add_argument('--hidden', default=50, type=int)
     parser.add_argument('--simple', dest='simple', action='store_true')
@@ -72,7 +73,7 @@ if __name__ == "__main__":
     Generator = generator(size_sample=10, n_steps_before_change=50,
                           sub=args.sub, type="BDSD", ndim=args.Ndim)
     # for epochs in range(args.Nepochs):
-    Check = ModelCheckpoint(filepath="weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
+    Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
                             save_best_only=False, save_weights_only=True, mode='auto', period=5)
     Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
 
