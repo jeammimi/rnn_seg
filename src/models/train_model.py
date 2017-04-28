@@ -79,4 +79,5 @@ if __name__ == "__main__":
 
     model.fit_generator(generator=Generator, steps_per_epoch=45,
                         validation_steps=5, epochs=args.Nepochs,
-                        callbacks=[Reduce, Check], validation_data=Generator)
+                        callbacks=[Reduce, Check], validation_data=Generator,
+                        max_q_size=20)
