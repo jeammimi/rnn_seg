@@ -20,12 +20,11 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
     l1 = Bidirectional(RNN(hidden, return_sequences=True), merge_mode='concat')(inputs)
     to_concat = [l1]
 
-    for j in range(1, n_layers + 1):
+    for j in range(1, n_layers):
         # print(globals())
         locals()["l%i" % (j + 1)] = Bidirectional(RNN(hidden,
                                                       return_sequences=True, activation='tanh'), merge_mode='concat')(Concatenate()([locals()["l%i" % j], inputs]))
         to_concat.append(locals()["l%i" % (j + 1)])
-
     to_concat += [inputs]
 
     output = TimeDistributed(Dense(n_states, activation="softmax"),
