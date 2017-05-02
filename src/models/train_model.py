@@ -70,7 +70,7 @@ if __name__ == "__main__":
     model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
                         inputsize=inputsize, hidden=args.hidden, simple=args.simple)
 
-    Generator = generator(size_sample=10, n_steps_before_change=50,
+    Generator = generator(size_sample=50, n_steps_before_change=50,
                           sub=args.sub, type="BDSD", ndim=args.Ndim)
     # for epochs in range(args.Nepochs):
     Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
