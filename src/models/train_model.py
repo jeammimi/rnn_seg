@@ -78,6 +78,6 @@ if __name__ == "__main__":
     Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
 
     model.fit_generator(generator=Generator, steps_per_epoch=45,
-                        validation_steps=5, epochs=args.Nepochs, workers=2,
+                        validation_steps=5, epochs=args.Nepochs, workers=1,
                         callbacks=[Reduce, Check], validation_data=Generator,
-                        max_q_size=20)
+                        max_q_size=10)
