@@ -6,7 +6,7 @@ import theano
 from .build_model import build_model
 from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
 from ..data.generate_n_steps import generate_n_steps as BDSD
-from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, CSVLogger
 
 # sys.path.append("../features")
 # print(__name__)
@@ -75,9 +75,10 @@ if __name__ == "__main__":
     # for epochs in range(args.Nepochs):
     Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
                             save_best_only=False, save_weights_only=True, mode='auto', period=5)
+    Log = CSVLogger(filename="./data/" + args.dir + "/training.log")
     Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
 
     model.fit_generator(generator=Generator, steps_per_epoch=45,
                         validation_steps=5, epochs=args.Nepochs, workers=1,
-                        callbacks=[Reduce, Check], validation_data=Generator,
+                        callbacks=[Reduce, Check, Log], validation_data=Generator,
                         max_q_size=10)
