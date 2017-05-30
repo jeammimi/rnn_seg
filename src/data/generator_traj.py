@@ -247,7 +247,7 @@ def generate_traj(time, fight=False, diff_sigma=2, deltav=0.4,
     Model_num = np.random.randint(0, len(Model_type.keys()))
 
     if force_model is not None:
-        if type(force_model) == types.IntType:
+        if type(force_model) == int:
             Model_num = force_model
         else:
             Model_num = force_model(np.random.randint(0, len(force_model)))
