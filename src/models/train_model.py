@@ -67,11 +67,16 @@ if __name__ == "__main__":
     elif args.Ndim == 2:
         inputsize = 5
 
+    type_traj = "BDSD"
+    if args.segmentation is False:
+        type_traj = "flexible"
+
     model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
-                        inputsize=inputsize, hidden=args.hidden, simple=args.simple)
+                        inputsize=inputsize, hidden=args.hidden, simple=args.simple,
+                        segmentation=args.segmentation)
 
     Generator = generator(size_sample=50, n_steps_before_change=50,
-                          sub=args.sub, type="BDSD", ndim=args.Ndim)
+                          sub=args.sub, type=type_traj, ndim=args.Ndim)
     # for epochs in range(args.Nepochs):
     Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
                             save_best_only=False, save_weights_only=True, mode='auto', period=5)
