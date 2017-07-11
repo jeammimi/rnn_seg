@@ -59,6 +59,7 @@ if __name__ == "__main__":
 
     os.makedirs(parameters["data_folder"], exist_ok=True)
 
+    print(parameters)
     model = build_model(n_states=parameters["n_states"], n_cat=parameters["n_cat"],
                         n_layers=parameters["n_layers"],
                         inputsize=parameters["n_dim"],
