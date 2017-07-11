@@ -57,7 +57,7 @@ if __name__ == "__main__":
     parameters["data_folder"] = os.path.join(parameters["data_folder"], "")
     parameters["filename"] = param_file
 
-    os.makedirs(parameters["data_folder"], exists=True)
+    os.makedirs(parameters["data_folder"], exist_ok=True)
 
     model = build_model(n_states=parameters["n_states"], n_cat=parameters["n_cat"],
                         n_layers=parameters["n_layers"],
