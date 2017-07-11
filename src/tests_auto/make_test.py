@@ -1,9 +1,6 @@
 
 import sys
 sys.path.append("./")
-from replication.ensembleSim import ensembleSim
-from replication.simulate import load_parameters
-from replication.tools import load_ori_position, load_lengths_and_centro
 import os
 import json
 import _pickle as cPickle
@@ -21,6 +18,12 @@ def make_sure_path_exists(path):
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             raise
+
+
+def load_parameters(filename):
+    with open(filename, "r") as f:
+        traj = json.load(f)
+    return traj
 
 
 if __name__ == "__main__":
