@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
     if parameters["type_test"] == "BV":
         r = Brownian_V_separation(model,
-                                  ndim=parameters["inputsize"] - 3, batch_size=10,
+                                  ndim=parameters["n_dim"], batch_size=10,
                                   noise_level=parameters["noise_level"])
 
     with open(os.path.join(parameters["data_folder"], parameters["type_test"] + ".pick"), "w"):
