@@ -6,10 +6,18 @@ import json
 import _pickle as cPickle
 import numpy as np
 import errno
+import sys
+import importlib
+from pathlib import Path
 
-from .automated_test import Brownian_V_separation
 
-from ..models.build_model import build_model
+def import_parents(level=1):
+    global __package__
+    file = Path(__file__).resolve()
+    parent, top = file.parent, file.parents[level]
+    __package__ = '.'.join(parent.parts[len(top.parts):])
+    sys.path.append(str(top))
+    importlib.import_module(__package__)  # won't be needed after that
 
 
 def make_sure_path_exists(path):
@@ -27,6 +35,11 @@ def load_parameters(filename):
 
 
 if __name__ == "__main__":
+
+    import_parents(level=2)
+    from .automated_test import Brownian_V_separation
+
+    from ..models.build_model import build_model
     param_file = sys.argv[1]
     parameters = load_parameters(param_file)
     # print(sys.argv)
