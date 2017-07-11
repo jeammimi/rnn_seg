@@ -54,7 +54,7 @@ if __name__ == "__main__":
     # print(parameters["n_cat"])
     model = build_model(n_states=parameters["n_states"], n_cat=parameters["n_cat"],
                         n_layers=parameters["n_layers"],
-                        inputsize=parameters["n_dim"],
+                        inputsize=parameters["n_dim"] + 3,
                         hidden=parameters["hidden"], simple=parameters["simple"],
                         segmentation=parameters["segmentation"])
 
