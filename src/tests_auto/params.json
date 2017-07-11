@@ -3,7 +3,7 @@
   "noise_level": 0,
   "n_states": 7,
   "n_layers": 3,
-  "n_cat ": 12,
+  "n_cat": 12,
   "n_dim" : 2,
   "hidden" : 50,
   "simple" : false,
