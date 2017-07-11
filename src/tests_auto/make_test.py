@@ -20,14 +20,6 @@ def import_parents(level=1):
     importlib.import_module(__package__)  # won't be needed after that
 
 
-def make_sure_path_exists(path):
-    try:
-        os.makedirs(path)
-    except OSError as exception:
-        if exception.errno != errno.EEXIST:
-            raise
-
-
 def load_parameters(filename):
     with open(filename, "r") as f:
         traj = json.load(f)
