@@ -7,9 +7,9 @@ import _pickle as cPickle
 import numpy as np
 import errno
 
-
-from .build_model import build_model
 from .automated_test import Brownian_V_separation
+
+from ..build_model import build_model
 
 
 def make_sure_path_exists(path):
