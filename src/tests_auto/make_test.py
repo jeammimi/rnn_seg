@@ -9,7 +9,7 @@ import errno
 
 from .automated_test import Brownian_V_separation
 
-from ..build_model import build_model
+from ..models.build_model import build_model
 
 
 def make_sure_path_exists(path):
