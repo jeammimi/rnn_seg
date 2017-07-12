@@ -65,5 +65,5 @@ if __name__ == "__main__":
                                   ndim=parameters["n_dim"], batch_size=10,
                                   noise_level=parameters["noise_level"])
 
-    with open(os.path.join(parameters["data_folder"], parameters["type_test"] + str(parameters["noise_level"]) + ".pick"), "w") as f:
+    with open(os.path.join(parameters["data_folder"], parameters["type_test"] + str(parameters["noise_level"]) + ".pick"), "wb") as f:
         cPickle.dump(r, f)
