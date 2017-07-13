@@ -24,6 +24,8 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
         # print(globals())
         locals()["l%i" % (j + 1)] = Bidirectional(RNN(hidden,
                                                       return_sequences=True, activation='tanh'), merge_mode=merge_mode)(Concatenate()([locals()["l%i" % j], inputs]))
+        locals()["l%i" % (j + 1)] = TimeDistributed(Dense(hidden,
+                                                          activation="linear"))(locals()["l%i" % (j + 1)])
         to_concat.append(locals()["l%i" % (j + 1)])
     to_concat += [inputs]
 
