@@ -82,7 +82,7 @@ if __name__ == "__main__":
 
     merge_mode = "concat"
     if args.merge_mode:
-        merge_mode = "average"
+        merge_mode = "ave"
 
     model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
                         inputsize=inputsize, hidden=args.hidden, simple=args.simple,
