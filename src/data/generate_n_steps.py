@@ -90,7 +90,7 @@ def generate_n_steps(N, nstep, ndim, sub=False, noise_level=0.25):
 
         Y_trains[i][range(size), np.array(sc, dtype=np.int)] = 1
 
-        Y_train_cat[i,  Model_num] = 1
-    return X_train, Y_trains, Y_train_cat
+        Y_train_cat[i, Model_num] = 1
+    return X_train, Y_trains, Y_train_cat, Y_train_traj
 
 # print np.sum(np.isnan(X_train))

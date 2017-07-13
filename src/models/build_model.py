@@ -9,7 +9,7 @@ from keras.backend.common import _EPSILON
 import numpy as np
 
 
-def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simple=False, sub=False, segmentation=True):
+def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simple=False, sub=False, segmentation=True, merge_mode="concat"):
 
     RNN = LSTM
     if simple:
@@ -23,14 +23,14 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
     for j in range(1, n_layers):
         # print(globals())
         locals()["l%i" % (j + 1)] = Bidirectional(RNN(hidden,
-                                                      return_sequences=True, activation='tanh'), merge_mode='concat')(Concatenate()([locals()["l%i" % j], inputs]))
+                                                      return_sequences=True, activation='tanh'), merge_mode=merge_mode)(Concatenate()([locals()["l%i" % j], inputs]))
         to_concat.append(locals()["l%i" % (j + 1)])
     to_concat += [inputs]
 
     output = TimeDistributed(Dense(n_states, activation="softmax"),
                              name="output")(Concatenate()(to_concat))
 
-    cat = Bidirectional(LSTM(n_cat, return_sequences=False), merge_mode='concat')(output)
+    cat = Bidirectional(LSTM(n_cat, return_sequences=False), merge_mode=merge_mode)(output)
     if segmentation:
         category = Dense(n_cat, activation="softmax", name="category")(cat)
 

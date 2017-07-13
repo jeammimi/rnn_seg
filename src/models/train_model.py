@@ -20,7 +20,7 @@ np.random.seed(6)
 
 
 def generator(**kwargs):
-    n_steps_before_change = kwargs.get("n_steps_before_change", 50)
+    #n_steps_before_change = kwargs.get("n_steps_before_change", 50)
     step = 0
     Step = kwargs.get("Step", {0: 26, 1: 50, 2: 100, 3: 200, 4: 400})
     #Step = kwargs.get("Step", {0: 26, 1: 26, 2: 26, 3: 26, 4: 26})
@@ -29,11 +29,19 @@ def generator(**kwargs):
         n_steps = step % len(Step)
         if kwargs["type"] == "flexible":
             X, Y, Trajs = Flexible(kwargs["size_sample"], Step[n_steps], kwargs["ndim"])
-            yield X, Y
-        elif kwargs["type"] == "BDSD":
-            X, Y, Y_cat = BDSD(kwargs["size_sample"], Step[n_steps], kwargs["ndim"], kwargs["sub"])
 
-            yield X, {"category": Y_cat, "output": Y}
+            if kwargs.get("traj", False):
+                yield X, Y, Trajs
+            else:
+                yield X, Y
+        elif kwargs["type"] == "BDSD":
+            X, Y, Y_cat, Trajs = BDSD(kwargs["size_sample"], Step[
+                                      n_steps], kwargs["ndim"], kwargs["sub"])
+            if kwargs.get("traj", False):
+                yield X, {"category": Y_cat, "output": Y}, Trajs
+            else:
+                yield X, {"category": Y_cat, "output": Y}
+
         step += 1
 
 
@@ -51,6 +59,7 @@ if __name__ == "__main__":
     parser.add_argument('--no-segmentation', dest='segmentation', action='store_false')
     parser.add_argument('--sub', dest='sub', action='store_true')
     parser.add_argument('--Nepochs', default=200, type=int)
+    parser.add_argument('--average', dest='merge_mode', action='store_true')
 
     args = parser.parse_args()
 
@@ -71,9 +80,13 @@ if __name__ == "__main__":
     if args.segmentation is False:
         type_traj = "flexible"
 
+    merge_mode = "concat"
+    if args.merge_mode:
+        merge_mode = "average"
+
     model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
                         inputsize=inputsize, hidden=args.hidden, simple=args.simple,
-                        segmentation=args.segmentation)
+                        segmentation=args.segmentation, merge_mode=merge_mode)
 
     Generator = generator(size_sample=50, n_steps_before_change=50,
                           sub=args.sub, type=type_traj, ndim=args.Ndim)
