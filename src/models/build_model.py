@@ -1,4 +1,4 @@
-from keras.layers import Input, Dense
+from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from keras.layers.recurrent import LSTM, SimpleRNN
 from keras.layers.wrappers import Bidirectional, TimeDistributed
@@ -27,10 +27,11 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
         locals()["l%i" % (j + 1)] = TimeDistributed(Dense(hidden,
                                                           activation="linear"))(locals()["l%i" % (j + 1)])
         to_concat.append(locals()["l%i" % (j + 1)])
-    to_concat += [inputs]
 
+    #to_concat += [inputs]
+    output_drop = Dropout(0.4)(Concatenate()(to_concat))
     output = TimeDistributed(Dense(n_states, activation="softmax"),
-                             name="output")(Concatenate()(to_concat))
+                             name="output")(output_drop)
 
     cat = Bidirectional(LSTM(n_cat, return_sequences=False), merge_mode=merge_mode)(output)
     if segmentation:
