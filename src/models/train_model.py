@@ -26,7 +26,7 @@ def generator(**kwargs):
     #Step = kwargs.get("Step", {0: 26, 1: 26, 2: 26, 3: 26, 4: 26})
 
     while True:
-        n_steps = step % len(Step)
+        n_steps = int(step // 50) % len(Step)
         if kwargs["type"] == "flexible":
             X, Y, Trajs = Flexible(kwargs["size_sample"], Step[n_steps], kwargs["ndim"])
 
