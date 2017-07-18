@@ -1,7 +1,7 @@
 print(__package__)
 
 import theano
-#theano.config.mode = "FAST_COMPILE"
+# theano.config.mode = "FAST_COMPILE"
 
 from .build_model import build_model
 from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
@@ -20,13 +20,20 @@ np.random.seed(6)
 
 
 def generator(**kwargs):
-    #n_steps_before_change = kwargs.get("n_steps_before_change", 50)
+    # n_steps_before_change = kwargs.get("n_steps_before_change", 50)
     step = 0
     Step = kwargs.get("Step", {0: 26, 1: 50, 2: 100, 3: 200, 4: 400})
-    #Step = kwargs.get("Step", {0: 26, 1: 26, 2: 26, 3: 26, 4: 26})
+    # Step = kwargs.get("Step", {0: 26, 1: 26, 2: 26, 3: 26, 4: 26})
 
     while True:
         n_steps = int(step // 50) % len(Step)
+
+        if kwargs.get("model", None):
+            n_steps = len(kwargs.get("model").history.epoch) % len(Step)
+
+        if kwargs.get("validation", None):
+            n_steps = step % len(Step)
+
         if kwargs["type"] == "flexible":
             X, Y, Trajs = Flexible(kwargs["size_sample"], Step[n_steps], kwargs["ndim"])
 
@@ -40,6 +47,11 @@ def generator(**kwargs):
             if kwargs.get("traj", False):
                 yield X, {"category": Y_cat, "output": Y}, Trajs
             else:
+
+                # print(X.shape, step)
+                # if kwargs.get("model", None):
+                #    print(kwargs.get("model").history.epoch)
+
                 yield X, {"category": Y_cat, "output": Y}
 
         step += 1
@@ -88,15 +100,15 @@ if __name__ == "__main__":
                         inputsize=inputsize, hidden=args.hidden, simple=args.simple,
                         segmentation=args.segmentation, merge_mode=merge_mode)
 
-    Generator = generator(size_sample=50, n_steps_before_change=50,
-                          sub=args.sub, type=type_traj, ndim=args.Ndim)
+    Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
+                                                    sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation)
     # for epochs in range(args.Nepochs):
     Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
                             save_best_only=False, save_weights_only=True, mode='auto', period=5)
     Log = CSVLogger(filename="./data/" + args.dir + "/training.log")
     Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
 
-    model.fit_generator(generator=Generator, steps_per_epoch=45,
+    model.fit_generator(generator=Generator(model, False), steps_per_epoch=45,
                         validation_steps=5, epochs=args.Nepochs, workers=1,
-                        callbacks=[Reduce, Check, Log], validation_data=Generator,
+                        callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
                         max_q_size=10)
