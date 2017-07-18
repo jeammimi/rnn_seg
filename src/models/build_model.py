@@ -2,11 +2,37 @@ from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from keras.layers.recurrent import LSTM, SimpleRNN
 from keras.layers.wrappers import Bidirectional, TimeDistributed
-from keras.layers.merge import Concatenate
+from keras.layers.merge import Concatenate, Average
+from keras import backend as K
 import theano.tensor as T
 import theano
 from keras.backend.common import _EPSILON
 import numpy as np
+
+
+from keras.engine.topology import Layer
+
+
+class Reverse(Layer):
+
+    def __init__(self, **kwargs):
+
+        super(Reverse, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        # Create a trainable weight variable for this layer.
+        """
+        self.kernel = self.add_weight(name='kernel',
+                                      shape=(input_shape[1], self.output_dim),
+                                      initializer='uniform',
+                                      trainable=True)"""
+        super(Reverse, self).build(input_shape)  # Be sure to call this somewhere!
+
+    def call(self, x):
+        return K.reverse(x, -2)
+
+    def compute_output_shape(self, input_shape):
+        return input_shape
 
 
 def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simple=False, sub=False, segmentation=True, merge_mode="concat"):
@@ -17,13 +43,16 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
 
     inputs = Input(shape=(None, inputsize))
 
-    l1 = Bidirectional(RNN(hidden, return_sequences=True), merge_mode='concat')(inputs)
+    def bi(layer, input):
+        return Average()([layer(input), Reverse()(layer(Reverse()(input)))])
+
+    l1 = bi(RNN(hidden, return_sequences=True), inputs)
     to_concat = [l1]
 
     for j in range(1, n_layers):
         # print(globals())
-        locals()["l%i" % (j + 1)] = Bidirectional(RNN(hidden,
-                                                      return_sequences=True, activation='tanh'), merge_mode=merge_mode)(Concatenate()([locals()["l%i" % j], inputs]))
+        locals()["l%i" % (j + 1)] = bi(RNN(hidden,
+                                           return_sequences=True, activation='tanh'), Concatenate()([locals()["l%i" % j], inputs]))
         locals()["l%i" % (j + 1)] = TimeDistributed(Dense(hidden,
                                                           activation="linear"))(locals()["l%i" % (j + 1)])
         to_concat.append(locals()["l%i" % (j + 1)])
