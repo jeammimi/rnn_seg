@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     parser.add_argument('--hidden', default=50, type=int)
     parser.add_argument('--simple', dest='simple', action='store_true')
-    parser.add_argument('--old', dest='old', action='store_false')
+    parser.add_argument('--old', dest='old', action='store_true')
 
     parser.add_argument('--no-segmentation', dest='segmentation', action='store_false')
     parser.add_argument('--sub', dest='sub', action='store_true')
