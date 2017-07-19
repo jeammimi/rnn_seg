@@ -8,6 +8,9 @@ from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
 from ..data.generate_n_steps import generate_n_steps as BDSD
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, CSVLogger
 
+from .build_model_old import return_layer_paper
+
+
 # sys.path.append("../features")
 # print(__name__)
 
@@ -68,6 +71,8 @@ if __name__ == "__main__":
 
     parser.add_argument('--hidden', default=50, type=int)
     parser.add_argument('--simple', dest='simple', action='store_true')
+    parser.add_argument('--old', dest='old', action='store_false')
+
     parser.add_argument('--no-segmentation', dest='segmentation', action='store_false')
     parser.add_argument('--sub', dest='sub', action='store_true')
     parser.add_argument('--Nepochs', default=200, type=int)
@@ -96,9 +101,13 @@ if __name__ == "__main__":
     if args.merge_mode:
         merge_mode = "ave"
 
-    model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
-                        inputsize=inputsize, hidden=args.hidden, simple=args.simple,
-                        segmentation=args.segmentation, merge_mode=merge_mode)
+    if not args.old:
+        model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
+                            inputsize=inputsize, hidden=args.hidden, simple=args.simple,
+                            segmentation=args.segmentation, merge_mode=merge_mode)
+    else:
+        model = return_layer_paper(ndim=2, inside=args.hidden, permutation=True, inputsize=inputsize, simple=False,
+                                   n_layers=3, category=True, output=True)
 
     Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
                                                     sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation)
