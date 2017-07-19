@@ -3,12 +3,9 @@ print(__package__)
 import theano
 # theano.config.mode = "FAST_COMPILE"
 
-from .build_model import build_model
 from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
 from ..data.generate_n_steps import generate_n_steps as BDSD
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, CSVLogger
-
-from .build_model_old import return_layer_paper
 
 
 # sys.path.append("../features")
@@ -102,10 +99,15 @@ if __name__ == "__main__":
         merge_mode = "ave"
 
     if not args.old:
+        from .build_model import build_model
+
         model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
                             inputsize=inputsize, hidden=args.hidden, simple=args.simple,
                             segmentation=args.segmentation, merge_mode=merge_mode)
+
     else:
+        from .build_model_old import return_layer_paper
+
         model = return_layer_paper(ndim=2, inside=args.hidden, permutation=True, inputsize=inputsize, simple=False,
                                    n_layers=3, category=True, output=True)
 
