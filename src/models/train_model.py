@@ -6,7 +6,7 @@ import theano
 from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
 from ..data.generate_n_steps import generate_n_steps as BDSD
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, CSVLogger
-
+import threading
 
 # sys.path.append("../features")
 # print(__name__)
@@ -64,11 +64,12 @@ class createBatchGenerator:
 
     def __init__(self, **kwargs):
         self.kwargs = kwargs
+        self.lock = threading.Lock()
 
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         kwargs = self.kwargs
         with self.lock:
             step = 0
