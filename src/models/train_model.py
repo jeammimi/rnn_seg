@@ -187,6 +187,6 @@ if __name__ == "__main__":
                             max_q_size=10)
     else:
         model.fit_generator(generator=Generator(model, False), samples_per_epoch=45,
-                            nb_val_samples=5, nb_epoch=args.Nepochs, nb_worker=1, pickle_safe=False,
+                            nb_val_samples=5, nb_epoch=args.Nepochs, nb_worker=1, pickle_safe=True,
                             callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
                             max_q_size=10)
