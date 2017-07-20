@@ -51,8 +51,11 @@ def generator(**kwargs):
                 # print(X.shape, step)
                 # if kwargs.get("model", None):
                 #    print(kwargs.get("model").history.epoch)
+                if kwargs.get("old", False):
 
-                yield X, {"category": Y_cat, "output": Y}
+                    yield [X], {"category": Y_cat, "output": Y}
+                else:
+                    yield X, {"category": Y_cat, "output": Y}
 
         step += 1
 
