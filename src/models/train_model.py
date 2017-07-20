@@ -53,7 +53,7 @@ def generator(**kwargs):
                 #    print(kwargs.get("model").history.epoch)
                 if kwargs.get("old", False):
 
-                    yield [X], {"category": Y_cat, "output": Y}
+                    yield {"input1": X}, {"category": Y_cat, "output": Y}
                 else:
                     yield X, {"category": Y_cat, "output": Y}
 
