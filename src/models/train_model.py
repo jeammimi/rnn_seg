@@ -114,12 +114,22 @@ if __name__ == "__main__":
     Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
                                                     sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation)
     # for epochs in range(args.Nepochs):
-    Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
-                            save_best_only=False, save_weights_only=True, mode='auto', period=5)
+    if not args.old:
+        Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
+                                save_best_only=False, save_weights_only=True, mode='auto', period=5)
+    else:
+        Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
+                                save_best_only=False, save_weights_only=True, mode='auto')
     Log = CSVLogger(filename="./data/" + args.dir + "/training.log")
     Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
 
-    model.fit_generator(generator=Generator(model, False), steps_per_epoch=45,
-                        validation_steps=5, epochs=args.Nepochs, workers=1,
-                        callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
-                        max_q_size=10)
+    if not args.old:
+        model.fit_generator(generator=Generator(model, False), steps_per_epoch=45,
+                            validation_steps=5, epochs=args.Nepochs, workers=1,
+                            callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
+                            max_q_size=10)
+    else:
+        model.fit_generator(generator=Generator(model, False), samples_per_epoch=45,
+                            nb_val_samples=5, nb_epoch=args.Nepochs,
+                            callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
+                            max_q_size=10)

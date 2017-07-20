@@ -781,7 +781,6 @@ from keras.layers.core import Lambda
 from keras.layers.convolutional import Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import LSTM, GRU
-from Bilayer import BiLSTM
 
 import theano.tensor as T
 import theano
