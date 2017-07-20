@@ -557,7 +557,6 @@ from keras.layers.core import Lambda
 from keras.layers.convolutional import Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import LSTM, GRU
-from Bilayer import BiLSTM
 #from keras.objectives import categorical_crossentropy
 
 
@@ -676,7 +675,6 @@ from keras.layers.core import Lambda
 from keras.layers.convolutional import Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import LSTM, GRU
-from Bilayer import BiLSTM
 #from keras.objectives import categorical_crossentropy
 
 
@@ -1070,10 +1068,6 @@ from keras.layers.convolutional import Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import LSTM, GRU
 
-if int(keras.__version__.split(".")[0]) >= 1.0:
-    from Bilayer import BiLSTMv1 as BiLSTM
-else:
-    from Bilayer import BiLSTM, BiSimpleRNN
 
 import theano.tensor as T
 import theano
@@ -1221,10 +1215,7 @@ from keras.layers.core import Lambda
 from keras.layers.convolutional import Convolution1D, MaxPooling1D, UpSampling1D
 from keras.layers.embeddings import Embedding
 from keras.layers.recurrent import LSTM, GRU
-if int(keras.__version__.split(".")[0]) >= 1.0:
-    from Bilayer import BiLSTMv1 as BiLSTM
-else:
-    from Bilayer import BiLSTM, BiSimpleRNN
+
 import theano.tensor as T
 import theano
 from keras.backend.common import _EPSILON
