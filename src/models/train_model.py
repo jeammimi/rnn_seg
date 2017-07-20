@@ -112,7 +112,7 @@ if __name__ == "__main__":
         from .build_model_old import return_layer_paper
 
         model = return_layer_paper(ndim=2, inside=args.hidden, permutation=True, inputsize=inputsize, simple=False,
-                                   n_layers=3, category=True, output=True)
+                                   n_layers=3, category=True, output=True, n_cat=n_cat, sub=args.sub)
 
     Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
                                                     sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation, old=args.old)

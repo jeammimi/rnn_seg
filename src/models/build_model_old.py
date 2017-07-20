@@ -1362,7 +1362,7 @@ from keras.backend.common import _EPSILON
 
 
 def return_layer_paper(ndim=2, inside=50, permutation=True, inputsize=5, simple=False,
-                       n_layers=4, category=True, output=True):
+                       n_layers=4, category=True, output=True, n_cat=12, sub=False):
 
     # categorical_crossentropy??
     # Loss:
@@ -1386,12 +1386,20 @@ def return_layer_paper(ndim=2, inside=50, permutation=True, inputsize=5, simple=
             return T.mean(T.sum(y_true[::, ::, perm[m]] * T.log(y_pred), axis=-1), axis=-1)
 
         #perm = np.array([[0,1],[1,0]],dtype=np.int)
-        perm = np.array([[0, 1, 2, 3, 4, 5, 6] + range(7, 10),
-                         [0, 1, 2, 4, 5, 3, 6] + range(7, 10),
-                         [0, 1, 2, 5, 4, 3, 6] + range(7, 10),
-                         [0, 1, 2, 3, 5, 4, 6] + range(7, 10),
-                         [0, 1, 2, 4, 3, 5, 6] + range(7, 10),
-                         [0, 1, 2, 5, 3, 4, 6] + range(7, 10)], dtype=np.int)
+        if sub:
+            perm = np.array([[0, 1, 2, 3, 4, 5, 6] + range(7, 10),
+                             [0, 1, 2, 4, 5, 3, 6] + range(7, 10),
+                             [0, 1, 2, 5, 4, 3, 6] + range(7, 10),
+                             [0, 1, 2, 3, 5, 4, 6] + range(7, 10),
+                             [0, 1, 2, 4, 3, 5, 6] + range(7, 10),
+                             [0, 1, 2, 5, 3, 4, 6] + range(7, 10)], dtype=np.int)
+        else:
+            perm = np.array([[0, 1, 2, 3, 4, 5, 6],
+                             [0, 1, 2, 4, 5, 3, 6],
+                             [0, 1, 2, 5, 4, 3, 6],
+                             [0, 1, 2, 3, 5, 4, 6],
+                             [0, 1, 2, 4, 3, 5, 6],
+                             [0, 1, 2, 5, 3, 4, 6]], dtype=np.int)
 
         """perm = np.array([[0, 1, 2, 3, 4, 5, 6],
                          [0, 1, 2, 3, 4, 5, 6]],dtype=np.int)"""
@@ -1440,16 +1448,18 @@ def return_layer_paper(ndim=2, inside=50, permutation=True, inputsize=5, simple=
     graph.add_node(Dropout(0.4), inputs=["l%i" % layer for layer in range(1, n_layers + 1)],
                    merge_mode="concat", concat_axis=-1, name="output0_drop")
     # Here get the subcategory
-
-    graph.add_node(TimeDistributedDense(10, activation="softmax"), input="output0_drop",
+    out = 7
+    if sub:
+        out = 10
+    graph.add_node(TimeDistributedDense(out, activation="softmax"), input="output0_drop",
                    name="output0")
 
     res = {}
 
     if category:
-        graph.add_node(Bi(output_dim=27, activation='tanh', return_sequences=False, close=True),
+        graph.add_node(Bi(output_dim=n_cat, activation='tanh', return_sequences=False, close=True),
                        name="category0bi", input="output0")
-        graph.add_node(Dense(27, activation="softmax"), input="category0bi", name="category0")
+        graph.add_node(Dense(n_cat, activation="softmax"), input="category0bi", name="category0")
         graph.add_output(name="category", input="category0")
         res['category'] = 'categorical_crossentropy'
 
