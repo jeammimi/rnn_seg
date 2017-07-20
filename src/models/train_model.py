@@ -115,7 +115,7 @@ if __name__ == "__main__":
                                    n_layers=3, category=True, output=True)
 
     Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
-                                                    sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation)
+                                                    sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation, old=args.old)
     # for epochs in range(args.Nepochs):
     if not args.old:
         Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
