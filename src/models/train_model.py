@@ -60,6 +60,56 @@ def generator(**kwargs):
         step += 1
 
 
+class createBatchGenerator:
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        kwargs = self.kwargs
+        with self.lock:
+            step = 0
+            Step = kwargs.get("Step", {0: 26, 1: 50, 2: 100, 3: 200, 4: 400})
+            # Step = kwargs.get("Step", {0: 26, 1: 26, 2: 26, 3: 26, 4: 26})
+
+            while True:
+                n_steps = int(step // 50) % len(Step)
+
+                if kwargs.get("model", None):
+                    n_steps = len(kwargs.get("model").history.epoch) % len(Step)
+
+                if kwargs.get("validation", None):
+                    n_steps = step % len(Step)
+
+                if kwargs["type"] == "flexible":
+                    X, Y, Trajs = Flexible(kwargs["size_sample"], Step[n_steps], kwargs["ndim"])
+
+                    if kwargs.get("traj", False):
+                        yield X, Y, Trajs
+                    else:
+                        yield X, Y
+                elif kwargs["type"] == "BDSD":
+                    X, Y, Y_cat, Trajs = BDSD(kwargs["size_sample"], Step[
+                                              n_steps], kwargs["ndim"], kwargs["sub"])
+                    if kwargs.get("traj", False):
+                        yield X, {"category": Y_cat, "output": Y}, Trajs
+                    else:
+
+                        # print(X.shape, step)
+                        # if kwargs.get("model", None):
+                        #    print(kwargs.get("model").history.epoch)
+                        if kwargs.get("old", False):
+
+                            yield {"input1": X, "category": Y_cat, "output": Y}
+                        else:
+                            yield X, {"category": Y_cat, "output": Y}
+
+                step += 1
+
+
 if __name__ == "__main__":
 
     import argparse
@@ -107,6 +157,8 @@ if __name__ == "__main__":
         model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
                             inputsize=inputsize, hidden=args.hidden, simple=args.simple,
                             segmentation=args.segmentation, merge_mode=merge_mode)
+        Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
+                                                        sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation, old=args.old)
 
     else:
         from .build_model_old import return_layer_paper
@@ -114,8 +166,9 @@ if __name__ == "__main__":
         model = return_layer_paper(ndim=2, inside=args.hidden, permutation=True, inputsize=inputsize, simple=False,
                                    n_layers=3, category=True, output=True, n_cat=n_cat, sub=args.sub)
 
-    Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
-                                                    sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation, old=args.old)
+        Generator = lambda model, validation: createBatchGenerator(size_sample=50, n_steps_before_change=50,
+                                                                   sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation, old=args.old)
+
     # for epochs in range(args.Nepochs):
     if not args.old:
         Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
