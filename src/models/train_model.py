@@ -69,7 +69,7 @@ class createBatchGenerator:
     def __iter__(self):
         return self
 
-    def __next__(self):
+    def next(self):
         kwargs = self.kwargs
         with self.lock:
             step = 0
