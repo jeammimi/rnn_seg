@@ -191,7 +191,6 @@ if __name__ == "__main__":
                         ndim=args.Ndim, validation=True, old=args.old)
         if os.path.exists("./data/" + args.dir + "/training.log"):
             os.remove("./data/" + args.dir + "/training.log")
-        Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
         Reduce.on_train_begin()
         for i in range(args.Nepochs):
 
@@ -200,9 +199,11 @@ if __name__ == "__main__":
                 break
 
             print(data["input1"].shape)
+            Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
 
-            model.fit(data, batch_size=20, nb_epoch=1,
-                      callbacks=[Check, Log], validation_split=0.1)
+            r = model.fit(data, batch_size=20, nb_epoch=1,
+                          callbacks=[Check, Log], validation_split=0.1)
+            print(r)
 
             if i % 5 == 0:
                 Reduce.model = model
