@@ -202,7 +202,7 @@ if __name__ == "__main__":
             Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
 
             r = model.fit(data, batch_size=20, nb_epoch=1,
-                          callbacks=[Check, Log], validation_split=0.1)
+                          callbacks=[Check, Log], validation_split=0.1, initial_epoch=i)
             #from IPython import embed
             # embed()
             # print(r["val_loss"])
