@@ -203,7 +203,7 @@ if __name__ == "__main__":
 
             r = model.fit(data, batch_size=20, nb_epoch=1,
                           callbacks=[Check, Log], validation_split=0.1)
-            print(r)
+            print(r["val_loss"])
 
             if i % 5 == 0:
                 Reduce.model = model
