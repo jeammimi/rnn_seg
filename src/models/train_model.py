@@ -186,9 +186,10 @@ if __name__ == "__main__":
                             callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
                             max_q_size=10)
     else:
+        gen = generator(size_sample=20 * 50, sub=args.sub, type=type_traj,
+                        ndim=args.Ndim, validation=True, old=args.old)
         for i in range(args.Nepochs):
-            gen = generator(size_sample=20 * 50, sub=args.sub, type=type_traj,
-                            ndim=args.Ndim, validation=True, old=args.old)
+
             for data in gen:
                 data = data
                 break
