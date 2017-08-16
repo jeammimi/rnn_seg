@@ -177,16 +177,22 @@ if __name__ == "__main__":
     else:
         Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
                                 save_best_only=False, save_weights_only=True, mode='auto')
-    Log = CSVLogger(filename="./data/" + args.dir + "/training.log")
     Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
 
     if not args.old:
+        Log = CSVLogger(filename="./data/" + args.dir + "/training.log")
         model.fit_generator(generator=Generator(model, False), steps_per_epoch=45,
                             validation_steps=5, epochs=args.Nepochs, workers=1,
                             callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
                             max_q_size=10)
     else:
-        model.fit_generator(generator=Generator(model, False), samples_per_epoch=45,
-                            nb_val_samples=5, nb_epoch=args.Nepochs, nb_worker=1, pickle_safe=True,
-                            callbacks=[Reduce, Check, Log], validation_data=Generator(model, True),
-                            max_q_size=10)
+        for i in range(args.Nepochs):
+            gen = generator(size_sample=20 * 50, sub=args.sub, type=type_traj,
+                            ndim=args.Ndim, model=model, validation=True, old=args.old)
+            for data in gen:
+                data = data
+                break
+
+            Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
+            model.fit(generator=data, batch_size=20, nb_epoch=1, nb_worker=1,
+                      callbacks=[Reduce, Check, Log], validation_split=0.1,)
