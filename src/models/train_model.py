@@ -194,5 +194,5 @@ if __name__ == "__main__":
                 break
 
             Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
-            model.fit(generator=data, batch_size=20, nb_epoch=1, nb_worker=1,
-                      callbacks=[Reduce, Check, Log], validation_split=0.1,)
+            model.fit(data, batch_size=20, nb_epoch=1,
+                      callbacks=[Reduce, Check, Log], validation_split=0.1)
