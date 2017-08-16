@@ -205,5 +205,5 @@ if __name__ == "__main__":
                       callbacks=[Check, Log], validation_split=0.1)
 
             if i % 5 == 0:
-                Reduce.model == model
+                Reduce.model = model
                 Reduce.on_epoch_end(i)
