@@ -7,6 +7,7 @@ from ..data.generate_n_steps_flexible import generate_n_steps as Flexible
 from ..data.generate_n_steps import generate_n_steps as BDSD
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, CSVLogger
 import threading
+import os
 
 # sys.path.append("../features")
 # print(__name__)
@@ -188,6 +189,10 @@ if __name__ == "__main__":
     else:
         gen = generator(size_sample=20 * 50, sub=args.sub, type=type_traj,
                         ndim=args.Ndim, validation=True, old=args.old)
+        if os.path.exists("./data/" + args.dir + "/training.log"):
+            os.remove("./data/" + args.dir + "/training.log")
+        Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
+        Reduce.on_train_begin()
         for i in range(args.Nepochs):
 
             for data in gen:
@@ -195,6 +200,10 @@ if __name__ == "__main__":
                 break
 
             print(data["input1"].shape)
-            Log = CSVLogger(filename="./data/" + args.dir + "/training.log", append=True)
+
             model.fit(data, batch_size=20, nb_epoch=1,
-                      callbacks=[Reduce, Check, Log], validation_split=0.1)
+                      callbacks=[Check, Log], validation_split=0.1)
+
+            if i % 5 == 0:
+                Reduce.model == model
+                Reduce.on_epoch_end(i)
