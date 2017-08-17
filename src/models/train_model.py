@@ -8,6 +8,7 @@ from ..data.generate_n_steps import generate_n_steps as BDSD
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau, CSVLogger
 import threading
 import os
+import keras.backend as K
 
 # sys.path.append("../features")
 # print(__name__)
@@ -207,6 +208,10 @@ if __name__ == "__main__":
             # embed()
             # print(r["val_loss"])
 
-            if i % 5 == 0:
-                Reduce.model = model
-                Reduce.on_epoch_end(i, logs={"val_loss": r.history["val_loss"][-1]})
+            if i % 200 == 0:
+                new_lr = float(K.get_value(model.optimizer.lr)) / 2
+
+                K.set_value(model.optimizer.lr, new_lr)
+
+                #Reduce.model = model
+                #Reduce.on_epoch_end(i, logs={"val_loss": r.history["val_loss"][-1]})
