@@ -2,7 +2,7 @@ from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from keras.layers.recurrent import LSTM, SimpleRNN
 from keras.layers.wrappers import Bidirectional, TimeDistributed
-from keras.layers.merge import Concatenate, Average
+from keras.layers.merge import Concatenate, Average, Add
 from keras import backend as K
 import theano.tensor as T
 import theano
@@ -43,8 +43,12 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
 
     inputs = Input(shape=(None, inputsize))
 
-    def bi(layer, input):
-        return Average()([layer(input), Reverse()(layer(Reverse()(input)))])
+    def bi(layer, input, end=False):
+        it = Add()([layer(input), Reverse()(layer(Reverse()(input)))])
+        if end:
+            return Dense(n_cat, activation="linear")(it)
+        else:
+            return TimeDistributed(Dense(hidden, activation="linear"))(it)
 
     l1 = bi(RNN(hidden, return_sequences=True), inputs)
     to_concat = [l1]
@@ -53,8 +57,6 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
         # print(globals())
         locals()["l%i" % (j + 1)] = bi(RNN(hidden,
                                            return_sequences=True, activation='tanh'), Concatenate()([locals()["l%i" % j], inputs]))
-        locals()["l%i" % (j + 1)] = TimeDistributed(Dense(hidden,
-                                                          activation="linear"))(locals()["l%i" % (j + 1)])
         to_concat.append(locals()["l%i" % (j + 1)])
 
     #to_concat += [inputs]
@@ -62,7 +64,7 @@ def build_model(n_states=10, n_cat=27, n_layers=3, inputsize=5, hidden=50, simpl
     output = TimeDistributed(Dense(n_states, activation="softmax"),
                              name="output")(output_drop)
 
-    cat = Bidirectional(LSTM(n_cat, return_sequences=False), merge_mode=merge_mode)(output)
+    cat = bi(LSTM(n_cat, return_sequences=False), output, end=True)
     if segmentation:
         category = Dense(n_cat, activation="softmax", name="category")(cat)
 
