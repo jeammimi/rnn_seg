@@ -160,7 +160,7 @@ if __name__ == "__main__":
         model = build_model(n_states=n_states, n_cat=n_cat, n_layers=args.NLayers,
                             inputsize=inputsize, hidden=args.hidden, simple=args.simple,
                             segmentation=args.segmentation, merge_mode=merge_mode)
-        Generator = lambda model, validation: generator(size_sample=50, n_steps_before_change=50,
+        Generator = lambda model, validation: generator(size_sample=20, n_steps_before_change=50,
                                                         sub=args.sub, type=type_traj, ndim=args.Ndim, model=model, validation=validation, old=args.old)
 
     else:
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     else:
         Check = ModelCheckpoint(filepath="./data/" + args.dir + "/weights.{epoch:02d}-{val_loss:.2f}.hdf5", monitor='val_loss', verbose=0,
                                 save_best_only=False, save_weights_only=True, mode='auto')
-    Reduce = ReduceLROnPlateau(factor=0.5, patience=5, min_lr=0.01)
+    Reduce = ReduceLROnPlateau(factor=0.5, patience=15, min_lr=0.01)
 
     if not args.old:
         Log = CSVLogger(filename="./data/" + args.dir + "/training.log")
