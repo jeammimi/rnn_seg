@@ -45,7 +45,7 @@ def generate_n_steps(N, nstep, ndim, sub=False, noise_level=0.25):
                                                                        delta_sigma_directed=1.,ndim=ndim,
                                                                       anisentropy=0.1,deltav=0.2,rho_fixed=False)
                 """
-                clean = 10
+                clean = 4
                 ModelN, Model_num, s, sc, real_traj, norm, Z = generate_traj(size, sub=sub,
                                                                              clean=clean, diff_sigma=2.0,
                                                                              delta_sigma_directed=6., ndim=ndim,

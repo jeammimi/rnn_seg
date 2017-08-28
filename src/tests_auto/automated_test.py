@@ -166,6 +166,6 @@ def Brownian_V_separation(graph, range_mu=None, range_len=None,
         plt.colorbar()
         plt.savefig("separation-unfilterer1.png")
 
-    return res, Real_traj, S
+    return res, Real_traj, S,
 # Brownian_V_separation("test",sm=1)
 # Brownian_V_separation("test",sm=1)
